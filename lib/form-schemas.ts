@@ -31,7 +31,7 @@ export type ClientAccountUpdateFormValues = z.infer<
 >;
 
 export const uploadPhotoSchema = z.object({
-  event_id: z.coerce.number().min(1, { message: "Event ID is required" }),
+  event_id: z.coerce.number().optional(),
   student_id: z.coerce.number({
     required_error: "Student ID is required",
     invalid_type_error: "Student ID must be a number",
@@ -40,13 +40,21 @@ export const uploadPhotoSchema = z.object({
     required_error: "Class ID is required",
     invalid_type_error: "Class ID must be a number",
   }),
-  photo_reference_code: z.string({
-    required_error: "Photo reference code is required",
-  }),
-  image_url: z.string(),
-  thumbnail_url: z.string().nullable(),
-  is_class_photo: z.boolean().default(false),
-  is_public_in_gallery: z.boolean().default(false),
+  photo_reference_code: z
+    .string({
+      required_error: "Photo reference code is required",
+      invalid_type_error: "Photo reference code must be a string",
+    })
+    .min(8, {
+      message: "Photo reference code cannot be empty",
+    })
+    .max(9, {
+      message: "Photo reference code must be 8 or 9 characters long",
+    }),
+  image_url: z.string().optional(),
+  thumbnail_url: z.string().optional(),
+  is_class_photo: z.boolean(),
+  is_public_in_gallery: z.boolean(),
 });
 
 export type UploadPhotoFormValues = z.infer<typeof uploadPhotoSchema>;

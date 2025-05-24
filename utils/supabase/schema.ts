@@ -360,7 +360,7 @@ export type Database = {
       photos: {
         Row: {
           class_id: number | null;
-          event_id: number;
+          event_id: number | null;
           image_url: string;
           is_class_photo: boolean | null;
           is_public_in_gallery: boolean | null;
@@ -372,7 +372,7 @@ export type Database = {
         };
         Insert: {
           class_id?: number | null;
-          event_id: number;
+          event_id?: number | null;
           image_url: string;
           is_class_photo?: boolean | null;
           is_public_in_gallery?: boolean | null;
@@ -384,7 +384,7 @@ export type Database = {
         };
         Update: {
           class_id?: number | null;
-          event_id?: number;
+          event_id?: number | null;
           image_url?: string;
           is_class_photo?: boolean | null;
           is_public_in_gallery?: boolean | null;

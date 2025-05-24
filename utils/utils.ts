@@ -10,7 +10,22 @@ import { redirect } from "next/navigation";
 export function encodedRedirect(
   type: "error" | "success",
   path: string,
-  message: string,
+  message: string
 ) {
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
+}
+
+// write a function to generate a random string of a 9 character length, try the crypto
+export function generateRandomString(): string {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const array = new Uint8Array(9);
+  window.crypto.getRandomValues(array);
+
+  for (let i = 0; i < 9; i++) {
+    result += characters[array[i] % characters.length];
+  }
+
+  return result;
 }
