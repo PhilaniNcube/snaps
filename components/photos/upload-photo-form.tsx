@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -50,6 +50,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { generateRandomString } from "@/utils/utils";
+import { start } from "repl";
 
 type ComponentProps = {
   schools: Database["public"]["Tables"]["schools"]["Row"][];
@@ -71,6 +72,11 @@ const UploadPhotoForm = ({
     Database["public"]["Tables"]["classes"]["Row"] | null
   >(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const [state, formAction, isPending] = useActionState(
+    uploadPhotoAction,
+    null
+  );
 
   // React Hook Form setup
   const form = useForm<UploadPhotoFormValues>({
@@ -129,8 +135,6 @@ const UploadPhotoForm = ({
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
@@ -139,21 +143,23 @@ const UploadPhotoForm = ({
         }
       });
 
-      const result = await uploadPhotoAction(null, formData);
+      startTransition(() => {
+        formAction(formData);
+      });
 
-      if (result?.success) {
+      if (state?.success) {
         toast.success("Photo uploaded successfully!");
         form.reset();
         setSelectedSchool(null);
         setSelectedClass(null);
         // Reset dropzone files
-        dropzoneProps.acceptedFiles = [];
-      } else if (result?.error) {
-        if (typeof result.error === "string") {
-          toast.error(result.error);
+        dropzoneProps.setFiles([]);
+      } else if (state?.error) {
+        if (typeof state.error === "string") {
+          toast.error(state.error);
         } else {
           // Handle field errors
-          Object.entries(result.error).forEach(([field, messages]) => {
+          Object.entries(state.error).forEach(([field, messages]) => {
             if (Array.isArray(messages)) {
               messages.forEach((message) => {
                 toast.error(`${field}: ${message}`);
@@ -435,10 +441,10 @@ const UploadPhotoForm = ({
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={!form.watch("image_url") || isSubmitting}
+                disabled={!form.watch("image_url") || isPending}
                 className="w-full"
               >
-                {isSubmitting ? "Uploading..." : "Upload Photo"}
+                {isPending ? "Uploading..." : "Upload Photo"}
               </Button>
             </form>
           </Form>

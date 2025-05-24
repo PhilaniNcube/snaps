@@ -26,8 +26,19 @@ export const clientAccountUpdateSchema = z.object({
   last_name: z.string().min(1, { message: "Last name is required" }).nullable(),
   email: z.string().email({ message: "Invalid email address" }).nullable(),
 });
+
+const editClientAccountSchema = clientAccountUpdateSchema.extend({
+  client_id: z.coerce.number({
+    required_error: "Client ID is required",
+    invalid_type_error: "Client ID must be a number",
+  }),
+});
+
 export type ClientAccountUpdateFormValues = z.infer<
   typeof clientAccountUpdateSchema
+>;
+export type EditClientAccountFormValues = z.infer<
+  typeof editClientAccountSchema
 >;
 
 export const uploadPhotoSchema = z.object({
@@ -57,6 +68,13 @@ export const uploadPhotoSchema = z.object({
   is_public_in_gallery: z.boolean(),
 });
 
+export const editPhotoSchema = uploadPhotoSchema.extend({
+  photo_id: z.coerce.number({
+    required_error: "Photo ID is required",
+    invalid_type_error: "Photo ID must be a number",
+  }),
+});
+
 export type UploadPhotoFormValues = z.infer<typeof uploadPhotoSchema>;
 
 export const createSchoolSchema = z.object({
@@ -67,7 +85,15 @@ export const createSchoolSchema = z.object({
   address: z.string({ required_error: "Address is required" }),
 });
 
+export const editSchoolSchema = createSchoolSchema.extend({
+  school_id: z.coerce.number({
+    required_error: "School ID is required",
+    invalid_type_error: "School ID must be a number",
+  }),
+});
+
 export type CreateSchoolFormValues = z.infer<typeof createSchoolSchema>;
+export type EditSchoolFormValues = z.infer<typeof editSchoolSchema>;
 
 export const addStudentSchema = z.object({
   class_id: z.coerce.number({
@@ -93,7 +119,15 @@ export const addStudentSchema = z.object({
   student_reference_id: z.string().optional(),
 });
 
+export const editStudentSchema = addStudentSchema.extend({
+  student_id: z.coerce.number({
+    required_error: "Student ID is required",
+    invalid_type_error: "Student ID must be a number",
+  }),
+});
+
 export type AddStudentFormValues = z.infer<typeof addStudentSchema>;
+export type EditStudentFormValues = z.infer<typeof editStudentSchema>;
 
 export const addClassSchema = z.object({
   school_id: z.coerce.number({
@@ -115,4 +149,37 @@ export const addClassSchema = z.object({
   }),
 });
 
+export const editClassSchema = addClassSchema.extend({
+  class_id: z.coerce.number({
+    required_error: "Class ID is required",
+    invalid_type_error: "Class ID must be a number",
+  }),
+});
+
 export type AddClassFormValues = z.infer<typeof addClassSchema>;
+export type EditClassFormValues = z.infer<typeof editClassSchema>;
+
+export const addEventSchema = z.object({
+  school_id: z.coerce.number({
+    required_error: "School ID is required",
+    invalid_type_error: "School ID must be a number",
+  }),
+  event_name: z.string({
+    required_error: "Event name is required",
+    invalid_type_error: "Event name must be a string",
+  }),
+  shoot_date: z.date().optional(),
+  order_deadline: z.date().optional(),
+  photo_gallery_live_until: z.date().optional(),
+  notes: z.string().optional(),
+});
+
+export const editEventSchema = addEventSchema.extend({
+  event_id: z.coerce.number({
+    required_error: "Event ID is required",
+    invalid_type_error: "Event ID must be a number",
+  }),
+});
+
+export type AddEventFormValues = z.infer<typeof addEventSchema>;
+export type EditEventFormValues = z.infer<typeof editEventSchema>;

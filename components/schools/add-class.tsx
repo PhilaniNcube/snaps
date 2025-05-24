@@ -104,7 +104,7 @@ const AddClass: React.FC<AddClassProps> = ({ schoolId, onSuccess }) => {
   }, [state, form, schoolId, onSuccess]);
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Add New Class</CardTitle>
         <CardDescription>Create a new class for this school</CardDescription>

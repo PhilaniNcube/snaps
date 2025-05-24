@@ -11,10 +11,18 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { School, Users, GraduationCap, Plus, RefreshCw } from "lucide-react";
+import {
+  School,
+  Users,
+  GraduationCap,
+  Plus,
+  RefreshCw,
+  CameraIcon,
+} from "lucide-react";
 
 import AddClass from "@/components/schools/add-class";
 import AddStudent from "@/components/schools/add-student";
+import AddEvent from "@/components/schools/add-event";
 import AddSchoolDialog from "@/components/schools/add-school-dialog";
 import { Separator } from "../ui/separator";
 
@@ -67,6 +75,12 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
     // Refresh data when a student is added
     onRefresh?.();
     console.log("Student added successfully!");
+  };
+
+  const handleEventCreated = () => {
+    // Refresh data when an event is created
+    onRefresh?.();
+    console.log("Event created successfully!");
   };
 
   const handleSchoolAdded = () => {
@@ -164,7 +178,7 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
 
           {/* Management Tabs */}
           <Tabs defaultValue="add-class" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger
                 value="add-class"
                 className="flex items-center gap-2"
@@ -179,8 +193,14 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
                 <Users className="h-4 w-4" />
                 Add Student
               </TabsTrigger>
+              <TabsTrigger
+                value="photo-shoot"
+                className="flex items-center gap-2"
+              >
+                <CameraIcon className="h-4 w-4" />
+                Add Photo Shoot Event
+              </TabsTrigger>
             </TabsList>
-
             {/* Add Class Tab */}
             <TabsContent value="add-class" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -243,7 +263,6 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
                 </div>
               </div>
             </TabsContent>
-
             {/* Add Student Tab */}
             <TabsContent value="add-student" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -327,6 +346,67 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
                           No classes available for student assignment.
                         </p>
                       )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>{" "}
+            {/* Photo Shoot Tab */}
+            <TabsContent value="photo-shoot" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Add Event Form */}
+                <div>
+                  {selectedSchoolId && (
+                    <AddEvent
+                      schoolId={selectedSchoolId}
+                      onSuccess={handleEventCreated}
+                    />
+                  )}
+                </div>
+
+                {/* Event Info/Tips */}
+                <div>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">
+                        Photo Shoot Event Tips
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4 text-sm">
+                        <div>
+                          <h4 className="font-semibold mb-1">📅 Shoot Date</h4>
+                          <p className="text-muted-foreground">
+                            The actual date when photos will be taken at the
+                            school.
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-1">
+                            ⏰ Order Deadline
+                          </h4>
+                          <p className="text-muted-foreground">
+                            Last date for parents to place orders for their
+                            child's photos.
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-1">
+                            🖼️ Gallery Live Until
+                          </h4>
+                          <p className="text-muted-foreground">
+                            How long the photo gallery will remain accessible to
+                            parents.
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-1">📝 Notes</h4>
+                          <p className="text-muted-foreground">
+                            Additional information like dress code, schedule, or
+                            special instructions.
+                          </p>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
