@@ -8,7 +8,23 @@ import {
 import { useSupabaseUpload } from "@/hooks/use-supabase-upload";
 import React from "react";
 
-const UploadPhotoForm = () => {
+type ComponentProps = {
+  schools: Database["public"]["Tables"]["schools"]["Row"][];
+  classes: Database["public"]["Tables"]["classes"]["Row"][];
+};
+
+const UploadPhotoForm = ({ schools, classes }: ComponentProps) => {
+  // add a hook to select a school
+  const [selectedSchool, setSelectedSchool] = React.useState<
+    Database["public"]["Tables"]["schools"]["Row"] | null
+  >(null);
+
+  // filter classes by selected school, and sue the useMemo hook to memoize the filtered classes
+  const filteredClasses = React.useMemo(() => {
+    if (!selectedSchool) return [];
+    return classes.filter((c) => c.school_id === selectedSchool.school_id);
+  }, [selectedSchool, classes]);
+
   const props = useSupabaseUpload({
     bucketName: "school-photos",
     allowedMimeTypes: ["image/*"],
