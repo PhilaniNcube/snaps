@@ -16,10 +16,12 @@ export async function uploadPhotoAction(
     photo_reference_code: formData.get("photo_reference_code"),
     image_url: formData.get("image_url"),
     thumbnail_url: formData.get("thumbnail_url"),
-    is_class_photo: formData.get("is_class_photo") === "on",
-    is_public_in_gallery: formData.get("is_public_in_gallery") === "on",
+    is_class_photo: formData.get("is_class_photo") === "true",
+    is_public_in_gallery: formData.get("is_public_in_gallery") === "true",
     event_id: formData.get("event_id"),
   });
+
+  console.log("Class Photo:", formData.get("is_class_photo"));
 
   if (!validatedFields.success) {
     return {
@@ -40,6 +42,8 @@ export async function uploadPhotoAction(
     is_public_in_gallery,
   } = validatedFields.data;
 
+  console.log("Uploading photo with data:", validatedFields.data);
+
   const supabase = await createClient();
 
   // Create two different insert objects based on whether event_id is provided
@@ -49,8 +53,8 @@ export async function uploadPhotoAction(
     photo_reference_code,
     image_url: image_url!,
     thumbnail_url: thumbnail_url || null,
-    is_class_photo: is_class_photo ?? false,
-    is_public_in_gallery: is_public_in_gallery ?? false,
+    is_class_photo,
+    is_public_in_gallery,
   };
 
   const insertData: Database["public"]["Tables"]["photos"]["Insert"] = event_id
@@ -63,7 +67,7 @@ export async function uploadPhotoAction(
   const { data, error } = await supabase
     .from("photos")
     .insert(insertData)
-    .select();
+    .select("*");
 
   if (error) {
     return {
@@ -74,7 +78,7 @@ export async function uploadPhotoAction(
     };
   }
 
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/upload");
 
   return {
     success: true,
