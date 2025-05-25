@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useQueryState, parseAsInteger } from "nuqs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -37,7 +38,12 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
   classes,
   onRefresh,
 }) => {
-  const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
+  // Use nuqs to manage selected school ID in URL search params
+  const [selectedSchoolId, setSelectedSchoolId] = useQueryState(
+    "school",
+    parseAsInteger
+  );
+
   const [selectedSchool, setSelectedSchool] = useState<
     Database["public"]["Tables"]["schools"]["Row"] | null
   >(null);
@@ -61,9 +67,9 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
       setSchoolClasses([]);
     }
   }, [selectedSchoolId, schools, classes]);
-
   const handleSchoolSelect = (schoolId: string) => {
-    setSelectedSchoolId(parseInt(schoolId));
+    const schoolIdNum = parseInt(schoolId);
+    setSelectedSchoolId(schoolIdNum);
   };
   const handleClassCreated = () => {
     // Refresh data when a class is created
@@ -110,9 +116,12 @@ const SchoolSelectorDashboard: React.FC<SchoolSelectorDashboardProps> = ({
               )}
             </div>
           </div>
-        </CardHeader>
+        </CardHeader>{" "}
         <CardContent>
-          <Select onValueChange={handleSchoolSelect}>
+          <Select
+            onValueChange={handleSchoolSelect}
+            value={selectedSchoolId?.toString() || ""}
+          >
             <SelectTrigger className="w-full p-3">
               <SelectValue placeholder="Choose a school to manage" />
             </SelectTrigger>

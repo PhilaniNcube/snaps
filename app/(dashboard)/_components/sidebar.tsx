@@ -15,6 +15,8 @@ import {
   ChevronRight,
   Upload,
   School,
+  BoxesIcon,
+  Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -80,6 +82,16 @@ export function DashboardSidebar({
       title: "Schools",
       href: "/dashboard/schools",
       icon: School,
+    },
+    {
+      title: "Classes",
+      href: "/dashboard/classes",
+      icon: BoxesIcon,
+    },
+    {
+      title: "Events",
+      href: "/dashboard/events",
+      icon: Trophy,
     },
     {
       title: "Upload Photos",

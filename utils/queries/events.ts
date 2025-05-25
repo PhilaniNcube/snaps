@@ -54,3 +54,20 @@ export async function getEventById(eventId: number) {
 
   return data;
 }
+
+export async function getUpcomingEvents(limit: number = 5) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("photo_shoot_events")
+    .select("*")
+    .gt("shoot_date", new Date().toISOString())
+    .order("shoot_date", { ascending: true })
+    .limit(limit);
+
+  if (error) {
+    throw new Error(`Failed to fetch upcoming events: ${error.message}`);
+  }
+
+  return data;
+}
