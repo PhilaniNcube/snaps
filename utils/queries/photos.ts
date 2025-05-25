@@ -126,3 +126,152 @@ export async function getPaginatedPhotos(page: number, pageSize: number) {
 
   return data;
 }
+
+// get paginated photos with filters
+export async function getPaginatedPhotosWithFilters({
+  page,
+  pageSize,
+  schoolId,
+  classId,
+  eventId,
+  isPublicOnly = true,
+}: {
+  page: number;
+  pageSize: number;
+  schoolId?: number;
+  classId?: number;
+  eventId?: number;
+  isPublicOnly?: boolean;
+}) {
+  const supabase = await createClient();
+
+  let query = supabase.from("photos").select(`
+      *,
+      classes (
+        class_name,
+        teacher_name,
+        schools (
+          school_name
+        )
+      ),
+      photo_shoot_events (
+        event_name,
+        shoot_date
+      )
+    `);
+
+  // Apply filters
+  if (isPublicOnly) {
+    query = query.eq("is_public_in_gallery", true);
+  }
+
+  if (schoolId) {
+    query = query.eq("classes.school_id", schoolId);
+  }
+
+  if (classId) {
+    query = query.eq("class_id", classId);
+  }
+
+  if (eventId) {
+    query = query.eq("event_id", eventId);
+  }
+
+  // Apply pagination and ordering
+  query = query
+    .range((page - 1) * pageSize, page * pageSize - 1)
+    .order("uploaded_at", { ascending: false });
+
+  const { data, error } = await query;
+
+  let totalCount = 0;
+  if (!error && data) {
+    totalCount = data.length;
+  }
+
+  const { data: photos, error: photosError, count } = await query;
+
+  if (photosError) {
+    console.error("Error fetching paginated photos with filters:", photosError);
+    return { photos: [], totalCount: count, totalPages: 0 };
+  }
+
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  return {
+    photos: photos || [],
+    totalCount,
+    totalPages,
+  };
+}
+
+// Simplified version without the count function for now
+export async function getPaginatedPhotosWithFiltersSimple({
+  page,
+  pageSize,
+  schoolId,
+  classId,
+  eventId,
+  isPublicOnly = true,
+}: {
+  page: number;
+  pageSize: number;
+  schoolId?: number;
+  classId?: number;
+  eventId?: number;
+  isPublicOnly?: boolean;
+}) {
+  const supabase = await createClient();
+
+  let query = supabase.from("photos").select(`
+      *,
+      classes!inner (
+        class_name,
+        teacher_name,
+        school_id,
+        schools (
+          school_name
+        )
+      ),
+      photo_shoot_events (
+        event_name,
+        shoot_date
+      )
+    `);
+
+  // Apply filters
+  if (isPublicOnly) {
+    query = query.eq("is_public_in_gallery", true);
+  }
+
+  if (schoolId) {
+    query = query.eq("classes.school_id", schoolId);
+  }
+
+  if (classId) {
+    query = query.eq("class_id", classId);
+  }
+
+  if (eventId) {
+    query = query.eq("event_id", eventId);
+  }
+
+  // Apply pagination and ordering
+  query = query
+    .range((page - 1) * pageSize, page * pageSize - 1)
+    .order("uploaded_at", { ascending: false });
+
+  const { data: photos, error: photosError } = await query;
+
+  if (photosError) {
+    console.error("Error fetching paginated photos with filters:", photosError);
+    return { photos: [], hasMore: false };
+  }
+
+  const hasMore = (photos?.length || 0) === pageSize;
+
+  return {
+    photos: photos || [],
+    hasMore,
+  };
+}
