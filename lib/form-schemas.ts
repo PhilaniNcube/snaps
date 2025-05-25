@@ -68,6 +68,30 @@ export const uploadPhotoSchema = z.object({
   is_public_in_gallery: z.boolean(),
 });
 
+// Schema for class/event photos (no student selection, automatically public)
+export const uploadClassEventPhotoSchema = z.object({
+  event_id: z.coerce.number().optional(),
+  class_id: z.coerce.number({
+    required_error: "Class ID is required",
+    invalid_type_error: "Class ID must be a number",
+  }),
+  photo_reference_code: z
+    .string({
+      required_error: "Photo reference code is required",
+      invalid_type_error: "Photo reference code must be a string",
+    })
+    .min(8, {
+      message: "Photo reference code cannot be empty",
+    })
+    .max(9, {
+      message: "Photo reference code must be 8 or 9 characters long",
+    }),
+  image_url: z.string().optional(),
+  thumbnail_url: z.string().optional(),
+  photo_title: z.string().optional(),
+  photo_description: z.string().optional(),
+});
+
 export const editPhotoSchema = uploadPhotoSchema.extend({
   photo_id: z.coerce.number({
     required_error: "Photo ID is required",
@@ -76,6 +100,9 @@ export const editPhotoSchema = uploadPhotoSchema.extend({
 });
 
 export type UploadPhotoFormValues = z.infer<typeof uploadPhotoSchema>;
+export type UploadClassEventPhotoFormValues = z.infer<
+  typeof uploadClassEventPhotoSchema
+>;
 
 export const createSchoolSchema = z.object({
   school_name: z.string({ required_error: "School name is required" }),

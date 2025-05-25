@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useQueryState, parseAsInteger } from "nuqs";
 import { format, isBefore, isAfter, differenceInDays } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,8 +18,10 @@ import {
   School,
   Users,
   CalendarDays,
+  Plus,
 } from "lucide-react";
 import { Database } from "@/utils/supabase/schema";
+import AddEvent from "./add-event";
 
 type Event = Database["public"]["Tables"]["photo_shoot_events"]["Row"] & {
   schools?: {
@@ -33,13 +35,19 @@ type School = Database["public"]["Tables"]["schools"]["Row"];
 interface EventsListProps {
   events: Event[];
   schools: School[];
+  onEventCreated?: () => void;
 }
 
-const EventsList: React.FC<EventsListProps> = ({ events, schools }) => {
+const EventsList: React.FC<EventsListProps> = ({
+  events,
+  schools,
+  onEventCreated,
+}) => {
   const [selectedSchoolId, setSelectedSchoolId] = useQueryState(
     "school",
     parseAsInteger
   );
+  const [showAddEventForm, setShowAddEventForm] = useState(false);
 
   // Filter events based on selected school
   const filteredEvents = selectedSchoolId
@@ -97,7 +105,6 @@ const EventsList: React.FC<EventsListProps> = ({ events, schools }) => {
 
     return { status: "scheduled", color: "default" };
   };
-
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "pending":
@@ -115,6 +122,14 @@ const EventsList: React.FC<EventsListProps> = ({ events, schools }) => {
       default:
         return "Unknown";
     }
+  };
+
+  // Handle event creation
+  const handleEventCreated = (
+    event: Database["public"]["Tables"]["photo_shoot_events"]["Row"]
+  ) => {
+    setShowAddEventForm(false);
+    onEventCreated?.();
   };
   const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     const eventStatus = getEventStatus(event);
@@ -213,6 +228,7 @@ const EventsList: React.FC<EventsListProps> = ({ events, schools }) => {
 
   return (
     <div className="space-y-6">
+      {" "}
       {/* Header with School Filter */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -223,13 +239,20 @@ const EventsList: React.FC<EventsListProps> = ({ events, schools }) => {
               : "All photo shoot events across schools"}
           </p>
         </div>
-        {selectedSchoolId && (
-          <Button variant="outline" onClick={() => setSelectedSchoolId(null)}>
-            View All Schools
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {selectedSchoolId && (
+            <Button variant="outline" onClick={() => setSelectedSchoolId(null)}>
+              View All Schools
+            </Button>
+          )}
+          {selectedSchoolId && (
+            <Button onClick={() => setShowAddEventForm(!showAddEventForm)}>
+              <Plus className="h-4 w-4 mr-2" />
+              {showAddEventForm ? "Cancel" : "Add Event"}
+            </Button>
+          )}
+        </div>
       </div>
-
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -287,10 +310,22 @@ const EventsList: React.FC<EventsListProps> = ({ events, schools }) => {
             <p className="text-xs text-muted-foreground">
               Past order deadlines
             </p>
-          </CardContent>
+          </CardContent>{" "}
         </Card>
       </div>
-
+      {/* Add Event Form */}
+      {showAddEventForm && selectedSchoolId && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Plus className="h-5 w-5" />
+            Create New Photo Shoot Event
+          </h2>
+          <AddEvent
+            schoolId={selectedSchoolId}
+            onSuccess={handleEventCreated}
+          />
+        </div>
+      )}
       {/* Events List */}
       {filteredEvents.length > 0 ? (
         <div className="space-y-6">
@@ -353,16 +388,23 @@ const EventsList: React.FC<EventsListProps> = ({ events, schools }) => {
                 {selectedSchoolId
                   ? "No Events for This School"
                   : "No Events Found"}
-              </h3>
+              </h3>{" "}
               <p className="text-muted-foreground max-w-md mx-auto mb-4">
                 {selectedSchoolId
                   ? `${schoolName} doesn't have any photo shoot events scheduled yet.`
-                  : "There are no photo shoot events in the system yet. Create your first event to get started."}
+                  : "There are no photo shoot events in the system yet. Select a school above and create your first event to get started."}
               </p>
-              <Button variant="outline">
-                <Camera className="h-4 w-4 mr-2" />
-                Create First Event
-              </Button>
+              {selectedSchoolId ? (
+                <Button onClick={() => setShowAddEventForm(true)}>
+                  <Camera className="h-4 w-4 mr-2" />
+                  Create First Event
+                </Button>
+              ) : (
+                <Button variant="outline" disabled>
+                  <Camera className="h-4 w-4 mr-2" />
+                  Select a School First
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

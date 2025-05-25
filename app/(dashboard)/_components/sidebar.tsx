@@ -99,6 +99,11 @@ export function DashboardSidebar({
       icon: Upload,
     },
     {
+      title: "Class/Event Photos",
+      href: "/dashboard/upload-class-photos",
+      icon: Camera,
+    },
+    {
       title: "Galleries",
       href: "/dashboard/galleries",
       icon: ImageIcon,

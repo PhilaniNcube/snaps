@@ -41,7 +41,7 @@ const EventsSchoolSelector: React.FC<EventsSchoolSelectorProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="flex justify-between items-center mb-4">
           <Select
             value={selectedSchoolId?.toString() || ""}
             onValueChange={(value) =>
@@ -49,21 +49,20 @@ const EventsSchoolSelector: React.FC<EventsSchoolSelectorProps> = ({
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a school to filter events..." />
+              <SelectValue
+                className="w-[200px]"
+                placeholder="Select a school to filter events..."
+              />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="overflow-y-auto">
               {schools.map((school) => (
                 <SelectItem
+                  className=""
                   key={school.school_id}
                   value={school.school_id.toString()}
                 >
-                  <div className="flex flex-col py-1">
+                  <div className="flex flex-col py-2">
                     <span className="font-medium">{school.school_name}</span>
-                    {school.contact_person && (
-                      <span className="text-xs text-muted-foreground">
-                        Contact: {school.contact_person}
-                      </span>
-                    )}
                   </div>
                 </SelectItem>
               ))}
