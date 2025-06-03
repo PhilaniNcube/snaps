@@ -31,8 +31,10 @@ import {
   School,
   GraduationCap,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Photo = Database["public"]["Tables"]["photos"]["Row"] & {
   classes?: {
@@ -55,6 +57,7 @@ type PhotoGalleryProps = {
   classes: Database["public"]["Tables"]["classes"]["Row"][];
   events: Database["public"]["Tables"]["photo_shoot_events"]["Row"][];
   hasMore: boolean;
+  showBackToFindSchool?: boolean;
 };
 
 const PhotoGallery: React.FC<PhotoGalleryProps> = ({
@@ -63,6 +66,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   classes,
   events,
   hasMore: initialHasMore,
+  showBackToFindSchool = false,
 }) => {
   // URL state management
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -169,9 +173,20 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const activeFiltersCount = [schoolId, classId, eventId, search].filter(
     Boolean
   ).length;
-
   return (
     <div className="space-y-6">
+      {/* Back Navigation */}
+      {showBackToFindSchool && (
+        <div className="flex items-center gap-4">
+          <Link href="/find-school">
+            <Button variant="outline" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Find School
+            </Button>
+          </Link>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
