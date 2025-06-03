@@ -223,7 +223,8 @@ export async function getPaginatedPhotosWithFiltersSimple({
 }) {
   const supabase = await createClient();
 
-  let query = supabase.from("photos").select(`
+  let query = supabase.from("photos").select(
+    `
       *,
       classes!inner (
         class_name,
@@ -237,7 +238,11 @@ export async function getPaginatedPhotosWithFiltersSimple({
         event_name,
         shoot_date
       )
-    `);
+    `,
+    {
+      count: "exact",
+    }
+  );
 
   // Apply filters
   if (isPublicOnly) {
@@ -261,17 +266,35 @@ export async function getPaginatedPhotosWithFiltersSimple({
     .range((page - 1) * pageSize, page * pageSize - 1)
     .order("uploaded_at", { ascending: false });
 
-  const { data: photos, error: photosError } = await query;
+  const { data: photos, error: photosError, count } = await query;
 
   if (photosError) {
     console.error("Error fetching paginated photos with filters:", photosError);
     return { photos: [], hasMore: false };
   }
 
-  const hasMore = (photos?.length || 0) === pageSize;
+  const hasMore = (count || 0) === pageSize;
 
   return {
     photos: photos || [],
     hasMore,
   };
+}
+
+// write a function to get 4 images for the featured images for the homepage
+export async function getFeaturedPhotos(limit: number = 4) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("photos")
+    .select("*", { count: "exact" })
+    .order("uploaded_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("Error fetching featured photos:", error);
+    return [];
+  }
+
+  return data;
 }

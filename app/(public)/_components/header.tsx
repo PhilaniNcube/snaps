@@ -22,22 +22,16 @@ export function Header() {
             Galleries
           </Link>
           <Link
-            href="/how-it-works"
+            href="/find-school"
             className="text-sm font-medium transition-colors hover:text-primary"
           >
-            How It Works
+            Find Your School
           </Link>
           <Link
             href="/pricing"
             className="text-sm font-medium transition-colors hover:text-primary"
           >
             Pricing
-          </Link>
-          <Link
-            href="/photographers"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            For Photographers
           </Link>
         </nav>
 

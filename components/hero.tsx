@@ -1,44 +1,42 @@
+import Link from "next/link";
 import NextLogo from "./next-logo";
 import SupabaseLogo from "./supabase-logo";
+import { Button } from "./ui/button";
+import { ArrowRight } from "lucide-react";
 
-export default function Header() {
+export default function Hero() {
   return (
-    <div className="flex flex-col gap-16 items-center">
-      <div className="flex gap-8 justify-center items-center">
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <SupabaseLogo />
-        </a>
-        <span className="border-l rotate-45 h-6" />
-        <a href="https://nextjs.org/" target="_blank" rel="noreferrer">
-          <NextLogo />
-        </a>
+    <section className="relative py-20 md:py-32 overflow-hidden">
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/5 via-background to-primary/10" />
+      <div className="container relative z-10 flex flex-col items-center text-center max-w-4xl">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl mb-6">
+          Capturing the Moments That{" "}
+          <span className="text-primary bg-gradient-to-r from-primary to-primary/80 bg-clip-text ">
+            Shape Their School Story
+          </span>
+        </h1>
+        <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl leading-relaxed">
+          From bright smiles in class photos to the triumphant spirit of school
+          events, we preserve the memories that matter most.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <Link href="/galleries">
+            <Button size="lg" className="gap-2 text-lg px-8 py-6">
+              View Our School Galleries <ArrowRight className="h-5 w-5" />
+            </Button>
+          </Link>
+          <Link href="/services">
+            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+              Learn More About Our Services
+            </Button>
+          </Link>
+          <Link href="/book">
+            <Button variant="secondary" size="lg" className="text-lg px-8 py-6">
+              Book Your School's Photo Day
+            </Button>
+          </Link>
+        </div>
       </div>
-      <h1 className="sr-only">Supabase and Next.js Starter Template</h1>
-      <p className="text-3xl lg:text-4xl leading-tight! mx-auto max-w-xl text-center">
-        The fastest way to build apps with{" "}
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Supabase
-        </a>{" "}
-        and{" "}
-        <a
-          href="https://nextjs.org/"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Next.js
-        </a>
-      </p>
-      <div className="w-full p-px bg-linear-to-r from-transparent via-foreground/10 to-transparent my-8" />
-    </div>
+    </section>
   );
 }
